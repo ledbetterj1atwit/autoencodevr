@@ -1,2 +1,2 @@
-model_checkpoint_path: "autoencode.done.ckpt"
-all_model_checkpoint_paths: "autoencode.done.ckpt"
+model_checkpoint_path: "autoencodeB.done.ckpt"
+all_model_checkpoint_paths: "autoencodeB.done.ckpt"

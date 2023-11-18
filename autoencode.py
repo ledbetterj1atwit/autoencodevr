@@ -1,4 +1,5 @@
 import glob
+from datetime import datetime
 from math import ceil
 import tensorflow as tf
 import PIL
@@ -14,8 +15,8 @@ img_height = 540  # Height per image.
 img_width = 960  # Width per image.
 img_channels = 3  # Channels per image(RGB).
 img_count = int(38458 / 8)  # No. of images in dataset
-epochs = 20  # Times to run through train data and train.
-save_freq = 2  # How often to save(epochs)
+epochs = 50  # Times to run through train data and train.
+save_freq = 5  # How often to save(epochs)
 
 
 # Load dataset.
@@ -51,7 +52,7 @@ encoder = keras.Sequential(  # All layers here must be "undone" in the decoder.
         layers.Conv2D(16, (7, 7), activation='relu', padding='same'),
         layers.MaxPooling2D((2, 2), padding='same'),  # Pool, shrinks data by (2,2)
         layers.Conv2D(8, (5, 5), activation='relu', padding='same'),
-        layers.MaxPooling2D((2, 2), padding='same'),  # Consider removing to compress less.
+        # layers.MaxPooling2D((2, 2), padding='same'),  # Consider removing to compress less.
         layers.Conv2D(8, (3, 3), activation='relu', padding='same'),
         layers.MaxPooling2D((2, 2), padding='same')  # Middle, "Latent space"
     ]
@@ -62,12 +63,12 @@ decoder = keras.Sequential(
         layers.Conv2DTranspose(8, (3, 3), activation='relu', padding='same'),  # Undo Convolution.
         layers.UpSampling2D((2, 2)),  # Upscale by same factor as pooling.
         layers.Conv2DTranspose(8, (5, 5), activation='relu', padding='same'),
-        layers.UpSampling2D((2, 2)),
+        # layers.UpSampling2D((2, 2)),
         layers.Conv2DTranspose(16, (7, 7), activation='relu', padding='same'),
         layers.UpSampling2D((2, 2)),
         layers.Conv2DTranspose(3, (5, 5), activation='sigmoid', padding='same'),
         # Convert convolutions to rbg bitplanes.
-        layers.Cropping2D((2, 0))  # Crop to fit input dimensions. Don't know why I have to, but I do.
+        # layers.Cropping2D((0, 0))  # Crop to fit input dimensions. Don't know why I have to, but I do.
     ]
 )
 
@@ -76,7 +77,8 @@ autoencoder.compile(optimizer='adam',
                     loss=keras.losses.MSE)  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
-checkpoint_path = "model_checkpoints/autoencode"
+checkpoint_name = "autoencodeB"
+checkpoint_path = "model_checkpoints/"+checkpoint_name
 chpt_cb = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path+".ckpt",
     save_weights_only=True,
@@ -85,7 +87,12 @@ chpt_cb = keras.callbacks.ModelCheckpoint(
 )
 
 if len(glob.glob("model_to_load/*")) != 0:  # Only load checkpoint in [./model_to_load]
-    autoencoder.load_weights("model_to_load/" + checkpoint_path)
+    autoencoder.load_weights("model_to_load/" + checkpoint_name + ".done.ckpt")
+
+# Setup logging
+log_dir = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_callback = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
 
 # Calculate current compression.
 uncomp_byt = (input_shape[-3] * input_shape[-2] * input_shape[-1]) * 8  # (h,w,c) -> to bytes
@@ -98,7 +105,7 @@ autoencoder.fit(
     vr_images_train,
     epochs=epochs,
     validation_data=vr_images_test,
-    callbacks=[chpt_cb]  # Don't forget to save :)
+    callbacks=[chpt_cb, tensorboard_callback]  # Don't forget to save :)
 )
 
 autoencoder.save_weights(checkpoint_path+".done.ckpt")
