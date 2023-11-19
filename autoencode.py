@@ -2,11 +2,8 @@ import glob
 from datetime import datetime
 from math import ceil
 import tensorflow as tf
-import PIL
-import PIL.Image
 import keras
 from keras import layers
-import numpy as np
 import matplotlib.pyplot as plt
 
 # Declare some useful variables.
@@ -14,7 +11,7 @@ batch_size = 2  # No. images per batch
 img_height = 540  # Height per image.
 img_width = 960  # Width per image.
 img_channels = 3  # Channels per image(RGB).
-img_count = int(38458 / 8)  # No. of images in dataset
+img_count = int(38458 / 1)  # No. of images in dataset
 epochs = 50  # Times to run through train data and train.
 save_freq = 5  # How often to save(epochs)
 
@@ -77,8 +74,8 @@ autoencoder.compile(optimizer='adam',
                     loss=keras.losses.MSE)  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
-checkpoint_name = "autoencodeB"
-checkpoint_path = "model_checkpoints/"+checkpoint_name
+checkpoint_name = "autoencodeB_{epoch:04d}"
+checkpoint_path = "model_checkpoints/ModelB/run2/"+checkpoint_name
 chpt_cb = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path+".ckpt",
     save_weights_only=True,
@@ -87,7 +84,8 @@ chpt_cb = keras.callbacks.ModelCheckpoint(
 )
 
 if len(glob.glob("model_to_load/*")) != 0:  # Only load checkpoint in [./model_to_load]
-    autoencoder.load_weights("model_to_load/" + checkpoint_name + ".done.ckpt")
+    to_load = '.'.join(glob.glob("model_to_load/*")[1].split('.')[:-1])  # [dir/name.ckpt] - [data-00000 or index]
+    autoencoder.load_weights(to_load)
 
 # Setup logging
 log_dir = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
