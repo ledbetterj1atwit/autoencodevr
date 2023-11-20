@@ -12,7 +12,7 @@ img_height = 540  # Height per image.
 img_width = 960  # Width per image.
 img_channels = 3  # Channels per image(RGB).
 img_count = int(38458 / 1)  # No. of images in dataset
-epochs = 50  # Times to run through train data and train.
+epochs = 15  # Times to run through train data and train.
 save_freq = 5  # How often to save(epochs)
 
 
@@ -48,7 +48,7 @@ encoder = keras.Sequential(  # All layers here must be "undone" in the decoder.
         layers.InputLayer(input_shape=input_shape),  # in
         layers.Conv2D(16, (7, 7), activation='relu', padding='same'),
         layers.MaxPooling2D((2, 2), padding='same'),  # Pool, shrinks data by (2,2)
-        layers.Conv2D(8, (5, 5), activation='relu', padding='same'),
+        layers.Conv2D(12, (5, 5), activation='relu', padding='same'),
         # layers.MaxPooling2D((2, 2), padding='same'),  # Consider removing to compress less.
         layers.Conv2D(8, (3, 3), activation='relu', padding='same'),
         layers.MaxPooling2D((2, 2), padding='same')  # Middle, "Latent space"
@@ -59,7 +59,7 @@ decoder = keras.Sequential(
     [
         layers.Conv2DTranspose(8, (3, 3), activation='relu', padding='same'),  # Undo Convolution.
         layers.UpSampling2D((2, 2)),  # Upscale by same factor as pooling.
-        layers.Conv2DTranspose(8, (5, 5), activation='relu', padding='same'),
+        layers.Conv2DTranspose(12, (5, 5), activation='relu', padding='same'),
         # layers.UpSampling2D((2, 2)),
         layers.Conv2DTranspose(16, (7, 7), activation='relu', padding='same'),
         layers.UpSampling2D((2, 2)),
@@ -74,8 +74,8 @@ autoencoder.compile(optimizer='adam',
                     loss=keras.losses.MSE)  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
-checkpoint_name = "autoencodeB_{epoch:04d}"
-checkpoint_path = "model_checkpoints/ModelB/run2/"+checkpoint_name
+checkpoint_name = "autoencodeC_{epoch:04d}"
+checkpoint_path = "model_checkpoints/ModelC/run2/"+checkpoint_name
 chpt_cb = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path+".ckpt",
     save_weights_only=True,

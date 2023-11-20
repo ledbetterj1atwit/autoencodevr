@@ -1,0 +1,2 @@
+model_checkpoint_path: "autoencodeC_{epoch:04d}.done.ckpt"
+all_model_checkpoint_paths: "autoencodeC_{epoch:04d}.done.ckpt"

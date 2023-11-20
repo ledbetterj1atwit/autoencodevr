@@ -1,0 +1,22 @@
+encoder = keras.Sequential(  
+    [
+        layers.InputLayer(input_shape=input_shape),  
+        layers.Conv2D(16, (7, 7), activation='relu', padding='same'),
+        layers.MaxPooling2D((2, 2), padding='same'),  
+        layers.Conv2D(12, (5, 5), activation='relu', padding='same'),
+        layers.Conv2D(8, (3, 3), activation='relu', padding='same'),
+        layers.MaxPooling2D((2, 2), padding='same')  
+    ]
+)
+
+decoder = keras.Sequential(
+    [
+        layers.Conv2DTranspose(8, (3, 3), activation='relu', padding='same'),  
+        layers.UpSampling2D((2, 2)),  
+        layers.Conv2DTranspose(12, (5, 5), activation='relu', padding='same'),
+        layers.Conv2DTranspose(16, (7, 7), activation='relu', padding='same'),
+        layers.UpSampling2D((2, 2)),
+        layers.Conv2DTranspose(3, (5, 5), activation='sigmoid', padding='same'),
+    ]
+)
+
