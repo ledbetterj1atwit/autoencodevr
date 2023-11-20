@@ -14,6 +14,7 @@ img_channels = 3  # Channels per image(RGB).
 img_count = int(38458 / 1)  # No. of images in dataset
 epochs = 15  # Times to run through train data and train.
 save_freq = 5  # How often to save(epochs)
+results_only = True  # Just use a saved model and get results?
 
 
 # Load dataset.
@@ -76,7 +77,7 @@ autoencoder.compile(optimizer='adam',
 # Set up checkpointing
 checkpoint_name = "autoencodeC_{epoch:04d}"
 checkpoint_path = "model_checkpoints/ModelC/run2/"+checkpoint_name
-chpt_cb = keras.callbacks.ModelCheckpoint(
+ckpt_cb = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path+".ckpt",
     save_weights_only=True,
     verbose=1,
@@ -99,14 +100,15 @@ comp_byt = (comp_shape[-3] * comp_shape[-2] * comp_shape[-1]) * 8
 print(f"Model compression: {uncomp_byt / 1000} kb -> {comp_byt / 1000} kb\nCompression ratio: {comp_byt / uncomp_byt}")
 
 # Train
-autoencoder.fit(
-    vr_images_train,
-    epochs=epochs,
-    validation_data=vr_images_test,
-    callbacks=[chpt_cb, tensorboard_callback]  # Don't forget to save :)
-)
+if not results_only:
+    autoencoder.fit(
+        vr_images_train,
+        epochs=epochs,
+        validation_data=vr_images_test,
+        callbacks=[ckpt_cb, tensorboard_callback]  # Don't forget to save :)
+    )
 
-autoencoder.save_weights(checkpoint_path+".done.ckpt")
+    autoencoder.save_weights(checkpoint_path+".done.ckpt")
 
 # Show results.
 n = 10  # number of images to show.
@@ -114,14 +116,14 @@ to_decode = vr_images_test.unbatch().take(n)
 originals = [i[0] for i in to_decode]
 for i in range(n):
     plt.figure()
-    ax = plt.subplot(2, 2, 1)
+    ax = plt.subplot(2, 1, 1)
     ax.get_xaxis().set_visible(False)  # Disable axes
     ax.get_yaxis().set_visible(False)
     ax.margins(tight=True)  # Tighen Margins
     ax.set_title('Original', fontstyle='oblique', fontfamily='serif', fontsize='medium')
     plt.imshow(originals[i].numpy().reshape(img_height, img_width, img_channels))
 
-    ax = plt.subplot(2, 2, 2)
+    ax = plt.subplot(2, 1, 2)
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
     ax.margins(tight=True)
