@@ -12,9 +12,9 @@ img_height = 540  # Height per image.
 img_width = 960  # Width per image.
 img_channels = 3  # Channels per image(RGB).
 img_count = int(38458 / 1)  # No. of images in dataset
-epochs = 15  # Times to run through train data and train.
+epochs = 5  # Times to run through train data and train.
 save_freq = 5  # How often to save(epochs)
-results_only = True  # Just use a saved model and get results?
+results_only = False  # Just use a saved model and get results?
 
 
 # Load dataset.
@@ -72,11 +72,11 @@ decoder = keras.Sequential(
 
 autoencoder = keras.Sequential(encoder.layers + decoder.layers)  # Combine encoder and decoder for training.
 autoencoder.compile(optimizer='adam',
-                    loss=keras.losses.MSE)  # Loss is MSE(bincrossentropy is usually described as worse???)
+                    loss=keras.losses.BinaryCrossentropy())  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
 checkpoint_name = "autoencodeC_{epoch:04d}"
-checkpoint_path = "model_checkpoints/ModelC/run2/"+checkpoint_name
+checkpoint_path = "model_checkpoints/ModelC/run1/"+checkpoint_name
 ckpt_cb = keras.callbacks.ModelCheckpoint(
     filepath=checkpoint_path+".ckpt",
     save_weights_only=True,

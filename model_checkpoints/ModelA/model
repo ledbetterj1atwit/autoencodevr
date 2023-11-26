@@ -22,3 +22,7 @@ decoder = keras.Sequential(
         layers.Cropping2D((2, 0))
     ]
 )
+
+autoencoder = keras.Sequential(encoder.layers + decoder.layers)
+autoencoder.compile(optimizer='adam',
+                    loss=keras.losses.MSE)

@@ -19,3 +19,7 @@ decoder = keras.Sequential(
         layers.Conv2DTranspose(3, (5, 5), activation='sigmoid', padding='same'),
     ]
 )
+
+autoencoder = keras.Sequential(encoder.layers + decoder.layers)
+autoencoder.compile(optimizer='adam',
+                    loss=keras.losses.MSE)
