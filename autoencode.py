@@ -12,7 +12,7 @@ img_height = 540  # Height per image.
 img_width = 960  # Width per image.
 img_channels = 3  # Channels per image(RGB).
 img_count = int(38458 / 1)  # No. of images in dataset
-epochs = 5  # Times to run through train data and train.
+epochs = 40  # Times to run through train data and train.
 save_freq = 5  # How often to save(epochs)
 results_only = False  # Just use a saved model and get results?
 
@@ -40,6 +40,12 @@ vr_images_train = vr_images_train.map(decode_img, num_parallel_calls=tf.data.AUT
     tf.data.AUTOTUNE)
 vr_images_test = vr_images_test.map(decode_img, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(
     tf.data.AUTOTUNE)
+
+# vr_images_train = None
+#
+# images = tf.data.Dataset.list_files("./evidence_images/*")
+# vr_images_test = images.take(10)
+# vr_images_test = vr_images_test.map(decode_img, num_parallel_calls=tf.data.AUTOTUNE).batch(5).prefetch(tf.data.AUTOTUNE)
 
 # Setup model
 input_shape = (img_height, img_width, img_channels)  # The input shape, (h,w,c)
@@ -75,10 +81,10 @@ autoencoder.compile(optimizer='adam',
                     loss=keras.losses.BinaryCrossentropy())  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
-checkpoint_name = "autoencodeC_{epoch:04d}"
-checkpoint_path = "model_checkpoints/ModelC/run1/"+checkpoint_name
+checkpoint_name = "autoencodeD_{epoch:04d}"
+checkpoint_path = "model_checkpoints/ModelD/run1/" + checkpoint_name
 ckpt_cb = keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path+".ckpt",
+    filepath=checkpoint_path + ".ckpt",
     save_weights_only=True,
     verbose=1,
     save_freq=save_freq * ceil((img_count * .8) / batch_size)  # Every x (epochs)
@@ -91,7 +97,6 @@ if len(glob.glob("model_to_load/*")) != 0:  # Only load checkpoint in [./model_t
 # Setup logging
 log_dir = "logs/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_callback = keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
-
 
 # Calculate current compression.
 uncomp_byt = (input_shape[-3] * input_shape[-2] * input_shape[-1]) * 8  # (h,w,c) -> to bytes
@@ -108,13 +113,22 @@ if not results_only:
         callbacks=[ckpt_cb, tensorboard_callback]  # Don't forget to save :)
     )
 
-    autoencoder.save_weights(checkpoint_path+".done.ckpt")
+    autoencoder.save_weights(checkpoint_path + ".done.ckpt")
 
 # Show results.
 n = 10  # number of images to show.
 to_decode = vr_images_test.unbatch().take(n)
 originals = [i[0] for i in to_decode]
 for i in range(n):
+    # ax = plt.gca()
+    # ax.get_xaxis().set_visible(False)  # Disable axes
+    # ax.get_yaxis().set_visible(False)
+    # ax.margins(tight=True)  # Tighen Margins
+    # plt.imshow(
+    #     autoencoder.predict(tf.reshape(originals[i], [1, img_height, img_width, img_channels])).reshape(img_height,
+    #                                                                                                     img_width,
+    #                                                                                                     img_channels),
+    #     interpolation='nearest')
     plt.figure()
     ax = plt.subplot(2, 1, 1)
     ax.get_xaxis().set_visible(False)  # Disable axes

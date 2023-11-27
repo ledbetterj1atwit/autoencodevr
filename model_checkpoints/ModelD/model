@@ -22,4 +22,4 @@ decoder = keras.Sequential(
 
 autoencoder = keras.Sequential(encoder.layers + decoder.layers)
 autoencoder.compile(optimizer='adam',
-                    loss=keras.losses.)
+                    loss=keras.losses.BinaryCrossentropy())
