@@ -238,6 +238,3 @@ results/
 
 # User should select a model to load, dont just use the last one I was working with!!!
 model_to_load/*
-
-# no logs pls
-/logs/
