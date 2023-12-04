@@ -41,11 +41,6 @@ vr_images_train = vr_images_train.map(decode_img, num_parallel_calls=tf.data.AUT
 vr_images_test = vr_images_test.map(decode_img, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size).prefetch(
     tf.data.AUTOTUNE)
 
-# vr_images_train = None
-#
-# images = tf.data.Dataset.list_files("./evidence_images/*")
-# vr_images_test = images.take(10)
-# vr_images_test = vr_images_test.map(decode_img, num_parallel_calls=tf.data.AUTOTUNE).batch(5).prefetch(tf.data.AUTOTUNE)
 
 # Setup model
 input_shape = (img_height, img_width, img_channels)  # The input shape, (h,w,c)
@@ -78,7 +73,7 @@ decoder = keras.Sequential(
 
 autoencoder = keras.Sequential(encoder.layers + decoder.layers)  # Combine encoder and decoder for training.
 autoencoder.compile(optimizer='adam',
-                    loss=keras.losses.BinaryCrossentropy())  # Loss is MSE(bincrossentropy is usually described as worse???)
+                    loss=keras.losses.MSE)  # Loss is MSE(bincrossentropy is usually described as worse???)
 
 # Set up checkpointing
 checkpoint_name = "autoencodeD_{epoch:04d}"
@@ -120,15 +115,6 @@ n = 10  # number of images to show.
 to_decode = vr_images_test.unbatch().take(n)
 originals = [i[0] for i in to_decode]
 for i in range(n):
-    # ax = plt.gca()
-    # ax.get_xaxis().set_visible(False)  # Disable axes
-    # ax.get_yaxis().set_visible(False)
-    # ax.margins(tight=True)  # Tighen Margins
-    # plt.imshow(
-    #     autoencoder.predict(tf.reshape(originals[i], [1, img_height, img_width, img_channels])).reshape(img_height,
-    #                                                                                                     img_width,
-    #                                                                                                     img_channels),
-    #     interpolation='nearest')
     plt.figure()
     ax = plt.subplot(2, 1, 1)
     ax.get_xaxis().set_visible(False)  # Disable axes
