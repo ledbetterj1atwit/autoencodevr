@@ -107,6 +107,11 @@ The model takes on average 12.1 ms to inference through the whole model, making 
 For comparison, [Oren Rippel and Lubomir Bourdev](https://arxiv.org/abs/1705.05823) found in their paper, Real-Time Adaptive Image Compression, that JPEG takes 18.6ms to encode and 13.0ms to decode and that WebP takes 67.0ms to encode and 83.7 ms to decode.
 For an application running at 60 frames per second, the application needs to generate a frame every 16.6ms so jpeg and webp cause significant latency per frame.
 
+Below is a comparison of output from jpeg, webp, and the ai.
+All three algorythims are compressed to the same filesize (2074Kb).
+
+![](https://media.githubusercontent.com/media/ledbetterj1atwit/autoencodevr/main/evidence_images/combined/img12337.png)
+
 ## Discussion
 
 This model is not very good, it needs to be changed, it should use a different loss fucntion(probably PSNR?), it could use a layer or regular neurons that flattens the images, something needs to be. 
