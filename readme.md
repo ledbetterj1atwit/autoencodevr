@@ -19,6 +19,10 @@ This repo contains my attempt to make an autoencoder for compresing frames from 
 - image_preprocess.py: Just halves the resolution of images, used to make dataset.
 - notes.md: Some observations.
 
+## Dataset
+
+it's [here](https://drive.google.com/file/d/1Y3DT43NK8L71z5UCDgO07CBggp0fGMuG/view?usp=drive_link)
+
 ## Introduction
 
 Admitidly, most of the following is from my paper for my Principals of Machine Learning.
@@ -45,6 +49,16 @@ For this, I used a CNN set up as an auto-encoder.
 Auto-encoders are Neural Networks(NN) that reduce the size of the data moving through them toward the middle and expand out again to the original size of the output to force the model to generalize.
 This shaping is good for compression since it will cause the model to train both shrinking the file and also unshrinking it in the same model.
 The model then only needs to focus on maintaining the original data at the output.
+
+## Selection of Data
+
+I just recorded 2 hours of chilloutvr play.
+I used SteamVR's view of both eyes to propperly emulate the user's view.
+Each frame was saved as a 1920x1080 pixel frame with 3 channels, saved to png format to avoid lossy compression.
+The largest problem with this data was having way too much.
+I recoreded at 5 frames per second and still ended up with 40Gb of data.
+This was after editiing to remove frames that might have issues, namely those containing my desktop overlay.
+I then halved the resolution to 960x540 to make it faster to train the model(faster mainly).
 
 ## Methods
 
@@ -97,11 +111,11 @@ For an application running at 60 frames per second, the application needs to gen
 
 This model is not very good, it needs to be changed, it should use a different loss fucntion(probably PSNR?), it could use a layer or regular neurons that flattens the images, something needs to be. 
 The model does not handle text well at all.
-While images overall look okay, its much more artifacted than other algorithms.
+While images overall look okay, it's much more artifacted than other algorithms.
 The only benefit that the autoencoder adds is that it's encode and decode times are small.
 A better model can likely be created, as other models exist that do better than mine. 
 I am admittedly not familiar with how best to create a convolutional neural net.
 
 ## Summary
 
-Autoencoder CNNs can provide great performance boost but they need to be carefully tuned, something I'm not the best at.
+Autoencoder CNNs can provide great performance boost, but they need to be carefully tuned, something I'm not the best at.
