@@ -108,19 +108,35 @@ For comparison, [Oren Rippel and Lubomir Bourdev](https://arxiv.org/abs/1705.058
 For an application running at 60 frames per second, the application needs to generate a frame every 16.6ms so jpeg and webp cause significant latency per frame.
 
 Below is a comparison of output from jpeg, webp, and the ai.
-All three algorythims are compressed to the same filesize (2074Kb).
+All three algorithms are compressed to the same filesize (2074Kb).
 
 ![](https://media.githubusercontent.com/media/ledbetterj1atwit/autoencodevr/main/evidence_images/combined/img12337.png)
 
 ## Discussion
 
-This model is not very good, it needs to be changed, it should use a different loss fucntion(probably PSNR?), it could use a layer or regular neurons that flattens the images, something needs to be. 
-The model does not handle text well at all.
-While images overall look okay, it's much more artifacted than other algorithms.
-The only benefit that the autoencoder adds is that it's encode and decode times are small.
-A better model can likely be created, as other models exist that do better than mine. 
-I am admittedly not familiar with how best to create a convolutional neural net.
+The model is not perfect, its major issues being compression ratio and image quality.
+It does not provide the quality that JPEG and WebP can provide as smaller file-sizes.
+Potential solutions include restructuring the layers of the model, implementing some non-convolutional layers, or using a Generative-Adversarial approach.
+The model's compression ratio is too dependent on the max pooling layers.
+A fix for this is to add some non-convolutional layers where varying the number of neurons changes the compression ratio.
+As well, some models should be made with smaller compression ratios to provide better compression.
+
+The model needs a better metric to train with.
+It could be trained with Peak Signal to Noise Ratio (PSNR), Structural Similarity Index (SSIM), Perceptual Similarity Metric (LPIPS).
+Each of these loss functions does a better job of measuring the depredation of image quality.
+Training with these could provide a better model visually and could improve training speed.
+
+Using prior recorded times from another paper is not the best method for comparison admittedly.
+The encode and decode times for the model should be measured separately as well as recording the encode and decode time of JPEG and WebP for comparable compression ratios.
+This would provide a more accurate comparison between all algorithms.
+
+Once a better model has been created, it would be ideal to include this model in an application.
+This would allow measuring of user preference and in application performance.
 
 ## Summary
 
-Autoencoder CNNs can provide great performance boost, but they need to be carefully tuned, something I'm not the best at.
+For users of wireless VR solutions, an AI compression algorithm would be useful.
+I attempted to create such a model using an autoencoder based CNN.
+While similar approaches exist, none exist that are application-specific or specific to wireless AI solutions.
+It was fast but not as good at compression or as good visually as JPEG or WebP at comparable compression ratios.
+The model should be improved in various ways before it is put into any application.
